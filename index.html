@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小中学生のための 生成AI パスポート</title>
+    <!-- Tailwind CSSを読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+            color: #1e293b; /* slate-800 */
+        }
+        /* PDF印刷時に背景色も保持するための設定 */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                background-color: #ffffff;
+            }
+            .page-break {
+                /* 各セクションを論理的なページとして扱うための改ページ */
+                page-break-before: always;
+            }
+        }
+        
+        /* ルビ（ふりがな）のスタイル */
+        ruby { line-height: 1.1; vertical-align: baseline; }
+        rt { font-size: 0.45em; user-select: none; }
+        
+        /* プロンプト要素の色の定義（元の資料の色を再現） */
+        .persona { background-color: #dbeafe; color: #1e40af; border-color: #3b82f6; } /* blue-100/600 */
+        .task { background-color: #d1fae5; color: #065f46; border-color: #10b981; } /* emerald-100/600 */
+        .format { background-color: #fef3c7; color: #92400e; border-color: #f59e0b; } /* amber-100/700 */
+        .context { background-color: #fee2e2; color: #991b1b; border-color: #ef4444; } /* red-100/700 */
+        .example { background-color: #ede9fe; color: #5b21b6; border-color: #8b5cf6; } /* violet-100/700 */
+
+        .rule-card { border-left: 5px solid; padding: 1rem; border-radius: 0.5rem; background-color: white; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="p-4 sm:p-8 lg:p-12 max-w-7xl mx-auto">
+
+    <!-- タイトルと目次 -->
+    <header class="text-center mb-12 py-6 border-b-8 border-indigo-600 bg-white rounded-xl shadow-2xl">
+        <h1 class="text-4xl md:text-6xl font-extrabold text-indigo-700">📘 <ruby>生成<rt>せいせい</rt></ruby>AIパスポート</h1>
+        <h2 class="text-xl md:text-3xl font-bold text-gray-700 mt-2">
+            <ruby>小中<rt>しょうちゅう</rt></ruby><ruby>学生<rt>がくせい</rt></ruby>のための <ruby>生成<rt>せいせい</rt></ruby>AI <ruby>活用<rt>かつよう</rt></ruby>ガイド
+        </h2>
+        <p class="text-lg mt-4 font-semibold bg-indigo-100 inline-block px-4 py-1 rounded-full text-indigo-800 shadow-md">
+            <ruby>対象<rt>たいしょう</rt></ruby><ruby>学年<rt>がくねん</rt></ruby>：<ruby>小学校<rt>しょうがっこう</rt></ruby> 4 <ruby>年<rt>ねん</rt></ruby><ruby>生<rt>せい</rt></ruby> 〜 <ruby>中学校<rt>ちゅうがっこう</rt></ruby> 3 <ruby>年<rt>ねん</rt></ruby><ruby>生<rt>せい</rt></ruby>
+        </p>
+    </header>
+
+    <!-- 目次（Navigational） -->
+    <nav class="mb-12 p-6 bg-white rounded-xl shadow-lg border border-indigo-200">
+        <h3 class="text-2xl font-bold mb-3 text-indigo-600">📋 <ruby>目次<rt>もくじ</rt></ruby></h3>
+        <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-lg">
+            <li><a href="#section0" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">0. <ruby>生成<rt>せいせい</rt></ruby>AIパスポートを<ruby>読<rt>よ</rt></ruby>んでいるみなさんへ</a></li>
+            <li><a href="#section1" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">1. <ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>安全<rt>あんぜん</rt></ruby>に<ruby>使<rt>つか</rt></ruby>うための 5 つのルール</a></li>
+            <li><a href="#section2" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">2. ページの<ruby>⾒<rt>み</rt></ruby>⽅ / いいプロンプトの<ruby>作<rt>つく</rt></ruby>り<ruby>⽅<rt>かた</rt></ruby></a></li>
+            <li><a href="#section3" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">3. まずはここから (<ruby>重要<rt>じゅうよう</rt></ruby>な 4 <ruby>場面<rt>ばめん</rt></ruby>)</a></li>
+            <li><a href="#section4" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">4. <ruby>⼩学<rt>しょうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>のみなさんへ <ruby>生成<rt>せいせい</rt></ruby>AIとあそぼう！<ruby>学<rt>まな</rt></ruby>ぼう！</a></li>
+            <li><a href="#section5" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">5. <ruby>中学<rt>ちゅうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>のみなさんへ <ruby>生成<rt>せいせい</rt></ruby>AIでもっと<ruby>広<rt>ひろ</rt></ruby>がる！みなさんの<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby></a></li>
+            <li><a href="#section6" class="text-indigo-700 hover:text-indigo-900 font-semibold transition">6. <ruby>先⽣<rt>せんせい</rt></ruby>‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ AI <ruby>時代<rt>じだい</rt></ruby>の<ruby>⼦<rt>こ</rt></ruby>どもの<ruby>学<rt>まな</rt></ruby>びを<ruby>⽀<rt>ささ</rt></ruby>えるために</a></li>
+        </ul>
+    </nav>
+    
+    <!-- 0. 生成AIパスポートを読んでいるみなさんへ -->
+    <section id="section0" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-indigo-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-indigo-700">0. <ruby>生成<rt>せいせい</rt></ruby>AIパスポートを<ruby>読<rt>よ</rt></ruby>んでいるみなさんへ</h3>
+        <p class="text-lg leading-relaxed mb-4">
+            みなさんは、AI（<ruby>人工<rt>じんこう</rt></ruby><ruby>知能<rt>ちのう</rt></ruby>）を<ruby>知<rt>し</rt></ruby>っているでしょうか。テレビやスマホ、ゲームなど、<ruby>実<rt>じつ</rt></ruby>はもうみなさんの<ruby>身近<rt>みぢか</rt></ruby>なところでAIが<ruby>活躍<rt>かつやく</rt></ruby>しています。そして<ruby>最近<rt>さいきん</rt></ruby>は、みなさんが<ruby>友人<rt>ゆうじん</rt></ruby>と<ruby>話<rt>はな</rt></ruby>をするように<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>作<rt>つく</rt></ruby>ったり、<ruby>色<rt>いろ</rt></ruby>々なアイデアを<ruby>出<rt>だ</rt></ruby>したりしてくれる**生成AI**という、かしこいAIが<ruby>登場<rt>とうじょう</rt></ruby>しています。
+        </p>
+        <p class="text-xl leading-relaxed font-semibold mb-6 p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-400">
+            <ruby>生成<rt>せいせい</rt></ruby>AIは、みなさんの<ruby>勉強<rt>べんきょう</rt></ruby>や<ruby>生活<rt>せいかつ</rt></ruby>を<ruby>大<rt>おお</rt></ruby>きく<ruby>助<rt>たす</rt></ruby>けてくれる、とても<ruby>強力<rt>きょうりょく</rt></ruby>な <span class="font-extrabold text-red-600">「<ruby>未来<rt>みらい</rt></ruby>の<ruby>道具<rt>どうぐ</rt></ruby>」</span>になります。
+        </p>
+        <p class="text-lg leading-relaxed mb-4">
+            このライブラリは、<ruby>小中<rt>しょうちゅう</rt></ruby><ruby>学生<rt>がくせい</rt></ruby>のみなさんが、<ruby>学校<rt>がっこう</rt></ruby>や<ruby>日<rt>にち</rt></ruby><ruby>常<rt>じょう</rt></ruby><ruby>生活<rt>せいかつ</rt></ruby>で<ruby>生成<rt>せいせい</rt></ruby>AIアプリをもっと<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>に、<ruby>役<rt>やく</rt></ruby><ruby>立<rt>た</rt></ruby>つように<ruby>使<rt>つか</rt></ruby>うためのアイデアを<ruby>集<rt>あつ</rt></ruby>めたものです。ここにあるアイデアは、みなさんが<ruby>生成<rt>せいせい</rt></ruby>AIアプリを<ruby>使<rt>つか</rt></ruby>って<ruby>色<rt>いろ</rt></ruby>々なことを<ruby>調<rt>しら</rt></ruby>べたり、<ruby>新<rt>あたら</rt></ruby>しいアイデアを<ruby>考<rt>かんが</rt></ruby>えたりするのに<ruby>役<rt>やく</rt></ruby><ruby>立<rt>た</rt></ruby>つはずです。<ruby>自分<rt>じぶん</rt></ruby>の<ruby>知<rt>し</rt></ruby>りたいことや、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わせて<ruby>自由<rt>じゆう</rt></ruby>に<ruby>書<rt>か</rt></ruby>き<ruby>換<rt>か</rt></ruby>えて<ruby>使<rt>つか</rt></ruby>ってみてください。
+        </p>
+        <div class="p-6 mt-8 bg-red-100 rounded-xl border-4 border-red-400">
+            <h4 class="text-2xl font-extrabold text-red-700 mb-3">でも、ちょっと<ruby>待<rt>ま</rt></ruby>って！ <ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>使<rt>つか</rt></ruby>うときに<ruby>気<rt>き</rt></ruby>をつけたい<ruby>大切<rt>たいせつ</rt></ruby>なこと</h4>
+            <p class="text-lg leading-relaxed">
+                <ruby>生成<rt>せいせい</rt></ruby>AIは、みなさんの<ruby>学<rt>まな</rt></ruby>びを<ruby>応援<rt>おうえん</rt></ruby>してくれる<ruby>役立<rt>やくだ</rt></ruby>つ<ruby>道具<rt>どうぐ</rt></ruby>ですが、<ruby>使<rt>つか</rt></ruby>うときにはいくつか<ruby>大切<rt>たいせつ</rt></ruby>なルールがあります。このルールを<ruby>知<rt>し</rt></ruby>らないと、<ruby>思<rt>おも</rt></ruby>わぬ<ruby>危険<rt>きけん</rt></ruby>があったり、せっかくの<ruby>生成<rt>せいせい</rt></ruby>AIの<ruby>力<rt>ちから</rt></ruby>を<ruby>上<rt>じょう</rt></ruby><ruby>手<rt>ず</rt></ruby>に<ruby>使<rt>つか</rt></ruby>えなかったりするかもしれません。<ruby>新<rt>あたら</rt></ruby>しいゲームを<ruby>始<rt>はじ</rt></ruby>める<ruby>前<rt>まえ</rt></ruby>にルールを<ruby>覚<rt>おぼ</rt></ruby>えるのと<ruby>同<rt>おな</rt></ruby>じように、<ruby>次<rt>つぎ</rt></ruby>のページから<ruby>紹介<rt>しょうかい</rt></ruby>する**「<ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>安全<rt>あんぜん</rt></ruby>に<ruby>使<rt>つか</rt></ruby>うための 5 つのルール」**をしっかり<ruby>確認<rt>かくにん</rt></ruby>し、<ruby>生成<rt>せいせい</rt></ruby>AIと<ruby>安全<rt>あんぜん</rt></ruby>に、そしてかしこく<ruby>仲良<rt>なかよ</rt></ruby>くなるための<ruby>約束<rt>やくそく</rt></ruby>をしましょう！
+            </p>
+        </div>
+    </section>
+
+    <!-- 1. 生成AIを安全に使うための 5つのルール -->
+    <div class="page-break"></div>
+    <section id="section1" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-red-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-red-600">1. <ruby>生成<rt>せいせい</rt></ruby>AI を<ruby>安全<rt>あんぜん</rt></ruby>に<ruby>使<rt>つか</rt></ruby>うための 5 つのルール</h3>
+        <p class="text-lg mb-6 font-semibold">この 5 つのルールを<ruby>守<rt>まも</rt></ruby>って、<ruby>生成<rt>せいせい</rt></ruby>AIをかしこく<ruby>使<rt>つか</rt></ruby>うことで、みなさんの<ruby>学<rt>まな</rt></ruby>びや<ruby>日常<rt>にちじょう</rt></ruby>はもっと楽しく、もっと<ruby>深<rt>ふか</rt></ruby>くなります！</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Rule 1: 個人情報、教えないで！ -->
+            <div class="rule-card border-red-500">
+                <h4 class="text-xl font-bold mb-1 text-red-600">1. <ruby>個人<rt>こじん</rt></ruby><ruby>情報<rt>じょうほう</rt></ruby>、<ruby>教<rt>おし</rt></ruby>えないで！ （プライバシー）</h4>
+                <p class="text-base text-gray-700">
+                    <ruby>住所<rt>じゅうしょ</rt></ruby>や、<ruby>名前<rt>なまえ</rt></ruby>、<ruby>家族<rt>かぞく</rt></ruby>のこと、<ruby>学校<rt>がっこう</rt></ruby>のテストの<ruby>点数<rt>てんすう</rt></ruby>などは、すごく<ruby>大切<rt>たいせつ</rt></ruby>な <span class="font-bold text-red-600">「<ruby>個人<rt>こじん</rt></ruby><ruby>情報<rt>じょうほう</rt></ruby>」</span>です。<ruby>必<rt>かな</rt></ruby>ず「グーグル <ruby>太郎<rt>たろう</rt></ruby>」のように、<ruby>本当<rt>ほんとう</rt></ruby>ではない<ruby>名前<rt>なまえ</rt></ruby>を<ruby>使<rt>つか</rt></ruby>いましょう。
+                </p>
+            </div>
+            
+            <!-- Rule 2: 本当に正しいか、確かめよう！ -->
+            <div class="rule-card border-orange-500">
+                <h4 class="text-xl font-bold mb-1 text-orange-600">2. <ruby>本当<rt>ほんとう</rt></ruby>に<ruby>正<rt>ただ</rt></ruby>しいか、<ruby>確<rt>たし</rt></ruby>かめよう！ （ファクトチェック）</h4>
+                <p class="text-base text-gray-700">
+                    <ruby>生成<rt>せいせい</rt></ruby>AIは、<ruby>時々<rt>ときどき</rt></ruby><ruby>事実<rt>じじつ</rt></ruby>とはちがうこと（ハルシネーション）を<ruby>作<rt>つく</rt></ruby>り<ruby>出<rt>だ</rt></ruby>すことがあります。<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>言<rt>い</rt></ruby>ったことをそのまま<ruby>信<rt>しん</rt></ruby>じず、<span class="font-bold text-orange-600">「<ruby>本当<rt>ほんとう</rt></ruby>かな？」と<ruby>疑<rt>うたが</rt></ruby>って</span>、<ruby>教科書<rt>きょうかしょ</rt></ruby>や<ruby>信頼<rt>しんらい</rt></ruby>できるサイトで<ruby>必<rt>かな</rt></ruby>ず<ruby>確<rt>たし</rt></ruby>かめましょう。
+                </p>
+            </div>
+
+            <!-- Rule 3: 頼りすぎない！自分で考えよう！ -->
+            <div class="rule-card border-cyan-500">
+                <h4 class="text-xl font-bold mb-1 text-cyan-600">3. <ruby>頼<rt>たよ</rt></ruby>りすぎない！<ruby>自分<rt>じぶん</rt></ruby>で<ruby>考<rt>かんが</rt></ruby>えよう！ （AI はアシスタント）</h4>
+                <p class="text-base text-gray-700">
+                    <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>出<rt>だ</rt></ruby>してくれたものをそのまま<ruby>提出<rt>ていしゅつ</rt></ruby>するのは<ruby>反則<rt>はんそく</rt></ruby>です。<ruby>生成<rt>せいせい</rt></ruby>AIはあくまで <span class="font-bold text-cyan-600">「<ruby>道具<rt>どうぐ</rt></ruby>」</span>です。<ruby>最後<rt>さいご</rt></ruby>はみなさん<ruby>自身<rt>じしん</rt></ruby>が、<span class="font-extrabold text-cyan-700"><ruby>自分<rt>じぶん</rt></ruby>の<ruby>頭<rt>あたま</rt></ruby>で<ruby>考<rt>かんが</rt></ruby>えて、あなただけの<ruby>言葉<rt>ことば</rt></ruby>やアイデアを<ruby>加<rt>くわ</rt></ruby>えて</span>、<ruby>作品<rt>さくひん</rt></ruby>に「<ruby>命<rt>いのち</rt></ruby>」を<ruby>吹<rt>ふ</rt></ruby>き<ruby>込<rt>こ</rt></ruby>もう！
+                </p>
+            </div>
+
+            <!-- Rule 4: 人の作品を大切にしよう！ -->
+            <div class="rule-card border-emerald-500">
+                <h4 class="text-xl font-bold mb-1 text-emerald-600">4. <ruby>人<rt>ひと</rt></ruby>の<ruby>作品<rt>さくひん</rt></ruby>を<ruby>大切<rt>たいせつ</rt></ruby>にしよう！ （<ruby>著作<rt>ちょさく</rt></ruby><ruby>権<rt>けん</rt></ruby>・<ruby>知的<rt>ちてき</rt></ruby><ruby>財産<rt>ざいさん</rt></ruby><ruby>権<rt>けん</rt></ruby>）</h4>
+                <p class="text-base text-gray-700">
+                    <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>作<rt>つく</rt></ruby>ったものが<ruby>誰<rt>だれ</rt></ruby>かの <span class="font-bold text-emerald-600">「<ruby>作品<rt>さくひん</rt></ruby>（<ruby>著作物<rt>ちょさくぶつ</rt></ruby>）」</span>にそっくりだったら<ruby>注意<rt>ちゅうい</rt></ruby>！<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>作<rt>つく</rt></ruby>ったものをそのまま<ruby>発表<rt>はっぴょう</rt></ruby>するのは<ruby>厳禁<rt>げんきん</rt></ruby>です。もし<ruby>使<rt>つか</rt></ruby>う<ruby>場合<rt>ばあい</rt></ruby>は、<span class="font-bold text-emerald-700">「これは<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>作<rt>つく</rt></ruby>ったものです」と、きちんと<ruby>伝<rt>つた</rt></ruby>えたり、<ruby>表記<rt>ひょうき</rt></ruby>しましょう。</span>
+                </p>
+            </div>
+
+            <!-- Rule 5: もし困ったら、大人に相談しよう！ -->
+            <div class="rule-card border-indigo-500 md:col-span-2">
+                <h4 class="text-xl font-bold mb-1 text-indigo-600">5. もし<ruby>困<rt>こま</rt></ruby>ったら、<ruby>大人<rt>おとな</rt></ruby>に<ruby>相談<rt>そうだん</rt></ruby>しよう！ （<ruby>相談<rt>そうだん</rt></ruby>・<ruby>連携<rt>れんけい</rt></ruby>）</h4>
+                <p class="text-base text-gray-700">
+                    <span class="font-bold text-indigo-600">「これで<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>かな？」「なんだか<ruby>怖<rt>こわ</rt></ruby>いな…」「<ruby>誰<rt>だれ</rt></ruby>かに<ruby>悪<rt>わる</rt></ruby>いことを<ruby>言<rt>い</rt></ruby>われたらどうしよう？」</span>など、<ruby>心配<rt>しんぱい</rt></ruby>なことがあったら、すぐに<ruby>周囲<rt>しゅうい</rt></ruby>の<ruby>大人<rt>おとな</rt></ruby>に<ruby>相談<rt>そうだん</rt></ruby>してください。<ruby>一人<rt>ひとり</rt></ruby>で<ruby>悩<rt>なや</rt></ruby>まずに、お<ruby>家<rt>うち</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>や<ruby>学校<rt>がっこう</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>に<ruby>話<rt>はな</rt></ruby>してくださいね。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. ページの⾒⽅ / いいプロンプトの作り方 -->
+    <div class="page-break"></div>
+    <section id="section2" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-blue-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-blue-600">2. ページの<ruby>⾒<rt>み</rt></ruby>⽅ / いいプロンプトの<ruby>作<rt>つく</rt></ruby>り<ruby>⽅<rt>かた</rt></ruby></h3>
+
+        <!-- ページの⾒⽅ -->
+        <div class="mb-8 p-4 border-l-4 border-blue-300 bg-blue-50 rounded-lg">
+            <h4 class="text-2xl font-bold mb-2 text-blue-700">📝 ページの<ruby>⾒<rt>み</rt></ruby>⽅</h4>
+            <ul class="list-disc list-inside space-y-2 text-lg">
+                <li><span class="font-bold text-indigo-700">「3. まずはここから」</span>：どんな<ruby>場面<rt>ばめん</rt></ruby>で、どんなプロンプトを<ruby>使<rt>つか</rt></ruby>えば<ruby>良<rt>よ</rt></ruby>いのか<ruby>書<rt>か</rt></ruby>いてあります。</li>
+                <li><span class="font-bold text-indigo-700">「4. ⼩学⽣のみなさんへ」「5. 中学⽣のみなさんへ」</span>：
+                    <ul class="list-circle list-inside ml-4">
+                        <li><span class="font-semibold text-green-700">「<ruby>生成<rt>せいせい</rt></ruby>AIと<ruby>話<rt>はな</rt></ruby>してみたよ！（プロンプト サンプル）」</span>：<ruby>初<rt>はじ</rt></ruby>めて<ruby>使<rt>つか</rt></ruby>う<ruby>人<rt>ひと</rt></ruby>は、このプロンプトをコピーして<ruby>使<rt>つか</rt></ruby>ってみましょう。</li>
+                        <li><span class="font-semibold text-orange-700">「こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！」</span>：プロンプトを<ruby>変<rt>か</rt></ruby>えるヒントが<ruby>書<rt>か</rt></ruby>いてあります。</li>
+                        <li><span class="font-semibold text-red-700">「<ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！」</span>：<ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>使<rt>つか</rt></ruby>う<ruby>時<rt>とき</rt></ruby>の<ruby>注意<rt>ちゅうい</rt></ruby><ruby>点<rt>てん</rt></ruby>が<ruby>書<rt>か</rt></ruby>いてあります。<ruby>必<rt>かな</rt></ruby>ず<ruby>守<rt>まも</rt></ruby>ってください！</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <!-- いいプロンプトの作り方 -->
+        <h4 class="text-2xl font-bold mb-4 text-blue-700">💡 いいプロンプトの<ruby>作<rt>つく</rt></ruby>り<ruby>⽅<rt>かた</rt></ruby></h4>
+        <p class="text-lg mb-6"><ruby>生成<rt>せいせい</rt></ruby>AIに<ruby>出<rt>だ</rt></ruby>す<ruby>指示<rt>しじ</rt></ruby>のことを**プロンプト**と<ruby>言<rt>い</rt></ruby>います。いいプロンプトを<ruby>作<rt>つく</rt></ruby>ると、いい<ruby>回答<rt>かいとう</rt></ruby>が<ruby>生成<rt>せいせい</rt></ruby>AIからもらえます。<ruby>次<rt>つぎ</rt></ruby>の 5 つの<ruby>要素<rt>ようそ</rt></ruby>をいれることがポイントです。</p>
+
+        <div class="space-y-4">
+            <!-- 5つの要素カード -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-lg shadow-md persona border-l-4">
+                <p class="font-bold text-xl col-span-1">🎭 <ruby>人物<rt>じんぶつ</rt></ruby>（ペルソナ）</p>
+                <p class="text-base col-span-1"><ruby>生成<rt>せいせい</rt></ruby>AIにどんな<ruby>⼈<rt>ひと</rt></ruby>になりきってほしいか？</p>
+                <code class="text-sm bg-blue-50 p-1 rounded font-mono col-span-1 text-blue-800">「<ruby>理科<rt>りか</rt></ruby>の<ruby>実験<rt>じっけん</rt></ruby>に<ruby>詳<rt>くわ</rt></ruby>しい<ruby>科学者<rt>かがくしゃ</rt></ruby>になりきって、<ruby>教<rt>おし</rt></ruby>えてください。」</code>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-lg shadow-md task border-l-4">
+                <p class="font-bold text-xl col-span-1">✅ <ruby>内容<rt>ないよう</rt></ruby>（タスク）</p>
+                <p class="text-base col-span-1"><ruby>生成<rt>せいせい</rt></ruby>AIに<ruby>何<rt>なに</rt></ruby>をしてほしいか？</p>
+                <code class="text-sm bg-emerald-50 p-1 rounded font-mono col-span-1 text-emerald-800">「<ruby>分数<rt>ぶんすう</rt></ruby>の<ruby>計算<rt>けいさん</rt></ruby>について<ruby>教<rt>おし</rt></ruby>えてください。」</code>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-lg shadow-md format border-l-4">
+                <p class="font-bold text-xl col-span-1">📝 <ruby>形式<rt>けいしき</rt></ruby>や<ruby>語調<rt>ごちょう</rt></ruby>（フォーマット‧トーン）</p>
+                <p class="text-base col-span-1"><ruby>生成<rt>せいせい</rt></ruby>AIにどんな<ruby>形式<rt>けいしき</rt></ruby>や<ruby>雰囲気<rt>ふんいき</rt></ruby>で<ruby>回答<rt>かいとう</rt></ruby>してほしいのか？</p>
+                <code class="text-sm bg-amber-50 p-1 rounded font-mono col-span-1 text-amber-800">「<ruby>箇条書<rt>かじょうが</rt></ruby>きで、<ruby>小学<rt>しょうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>でも<ruby>分<rt>わ</rt></ruby>かりやすくまとめてください。」</code>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-lg shadow-md context border-l-4">
+                <p class="font-bold text-xl col-span-1">🚫 <ruby>制約<rt>せいやく</rt></ruby>（コンテキスト）</p>
+                <p class="text-base col-span-1"><ruby>生成<rt>せいせい</rt></ruby>AIへ<ruby>質問<rt>しつもん</rt></ruby>や<ruby>指<rt>し</rt></ruby><ruby>⽰<rt>じ</rt></ruby>の<ruby>詳細<rt>しょうさい</rt></ruby>な<ruby>状況<rt>じょうきょう</rt></ruby>や<ruby>背景<rt>はいけい</rt></ruby>などをつたえる</p>
+                <code class="text-sm bg-red-50 p-1 rounded font-mono col-span-1 text-red-800">「<ruby>答<rt>こた</rt></ruby>えは<ruby>⾃分<rt>じぶん</rt></ruby>で<ruby>出<rt>だ</rt></ruby>したいので、<ruby>答<rt>こた</rt></ruby>えは<ruby>⾔<rt>い</rt></ruby>わないでください。」</code>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-2 p-3 rounded-lg shadow-md example border-l-4">
+                <p class="font-bold text-xl col-span-1">💬 <ruby>例<rt>れい</rt></ruby></p>
+                <p class="text-base col-span-1"><ruby>生成<rt>せいせい</rt></ruby>AIへ<ruby>例<rt>たと</rt></ruby>えばどんな<ruby>回答<rt>かいとう</rt></ruby>をしてほしいのかつたえる</p>
+                <code class="text-sm bg-violet-50 p-1 rounded font-mono col-span-1 text-violet-800">「『<ruby>昔<rt>むかし</rt></ruby><ruby>昔<rt>むかし</rt></ruby>あるところに…』のように、<ruby>物語<rt>ものがたり</rt></ruby><ruby>風<rt>ふう</rt></ruby>に<ruby>始<rt>はじ</rt></ruby>めてください。」</code>
+            </div>
+        </div>
+
+        <div class="p-4 mt-8 bg-yellow-100 rounded-xl border-4 border-yellow-400">
+            <p class="text-lg font-bold text-yellow-900">
+                💡 <ruby>生成<rt>せいせい</rt></ruby>AI マスターへのコツ：
+                1 <ruby>回<rt>かい</rt></ruby>だけでなく、<ruby>友達<rt>ともだち</rt></ruby>と<ruby>話<rt>はな</rt></ruby>しているように、<span class="font-extrabold text-indigo-700"><ruby>自然<rt>しぜん</rt></ruby>な<ruby>会話<rt>かいわ</rt></ruby>を<ruby>生成<rt>せいせい</rt></ruby>AIとつづけること</span>もポイントです。<ruby>必要<rt>ひつよう</rt></ruby>な「<ruby>情報<rt>じょうほう</rt></ruby>」を<ruby>丁寧<rt>ていねい</rt></ruby>に、<ruby>生成<rt>せいせい</rt></ruby>AIに<ruby>話<rt>はな</rt></ruby>しかけてあげてください。
+            </p>
+        </div>
+    </section>
+
+    <!-- 3. まずはここから（重要 4 場面） -->
+    <div class="page-break"></div>
+    <section id="section3" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-green-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-green-700">3. まずはここから</h3>
+        <p class="text-xl mb-6 font-semibold"><ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>使<rt>つか</rt></ruby>うときに<ruby>重要<rt>じゅうよう</rt></ruby>なことと、<ruby>特<rt>とく</rt></ruby>に<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>活躍<rt>かつやく</rt></ruby>する<ruby>場面<rt>ばめん</rt></ruby>を 4 つまとめました。<ruby>先生<rt>せんせい</rt></ruby>や<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>方<rt>かた</rt></ruby>とまずこの<ruby>章<rt>しょう</rt></ruby>を<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>確認<rt>かくにん</rt></ruby>してから<ruby>使<rt>つか</rt></ruby>い<ruby>始<rt>はじ</rt></ruby>めてください。</p>
+
+        <div class="space-y-8">
+            <!-- 場面 1: 情報を⾒極める練習 -->
+            <div class="p-5 rounded-xl shadow-lg border-l-4 border-red-500 bg-red-50">
+                <h4 class="text-2xl font-bold mb-3 text-red-700">1. AI の<ruby>答<rt>こた</rt></ruby>えは「ほんと？」と<ruby>確<rt>たし</rt></ruby>かめてみよう！ 〜<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>⾒<rt>み</rt></ruby><ruby>極<rt>きわ</rt></ruby>める<ruby>練習<rt>れんしゅう</rt></ruby>〜</h4>
+                <p class="mb-3 text-gray-700"><span class="font-bold text-red-600"><ruby>使<rt>つか</rt></ruby>い<ruby>⽅<rt>かた</rt></ruby>：</span>AIの<ruby>回答<rt>かいとう</rt></ruby>を<ruby>使<rt>つか</rt></ruby>う<ruby>前<rt>まえ</rt></ruby>に、<ruby>複数<rt>ふくすう</rt></ruby>の<ruby>信頼<rt>しんらい</rt></ruby>できる<ruby>情報源<rt>じょうほうげん</rt></ruby>と<ruby>照<rt>て</rt></ruby>らし<ruby>合<rt>あ</rt></ruby>わせて<ruby>確認<rt>かくにん</rt></ruby>する<ruby>習慣<rt>しゅうかん</rt></ruby>をつけましょう。</p>
+                <div class="p-3 bg-white rounded-lg border-t-2 border-red-300 mb-3">
+                    <p class="font-semibold text-gray-800 mb-1">プロンプト<ruby>例<rt>れい</rt></ruby></p>
+                    <code class="text-sm block whitespace-pre-wrap bg-gray-100 p-2 rounded font-mono">"あなたは<ruby>地球<rt>ちきゅう</rt></ruby><ruby>温暖化<rt>おんだんか</rt></ruby>の<ruby>専門家<rt>せんもんか</rt></ruby>です。 私は<ruby>⼩学<rt>しょうがく</rt></ruby> 6 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>で、<ruby>⼩学<rt>しょうがく</rt></ruby><ruby>校<rt>こう</rt></ruby>で<ruby>地球<rt>ちきゅう</rt></ruby><ruby>温暖化<rt>おんだんか</rt></ruby>について<ruby>学<rt>まな</rt></ruby>びました。<ruby>地球<rt>ちきゅう</rt></ruby><ruby>温暖化<rt>おんだんか</rt></ruby>の<ruby>原因<rt>げんいん</rt></ruby>と<ruby>対策<rt>たいさく</rt></ruby>についてわかりやすく<ruby>教<rt>おし</rt></ruby>えてください。 そしてその<ruby>情報<rt>じょうほう</rt></ruby>が<ruby>正<rt>ただ</rt></ruby>しいか、<span class="font-bold text-red-700">どのように<ruby>確認<rt>かくにん</rt></ruby>できるか</span>も<ruby>教<rt>おし</rt></ruby>えてください。"</code>
+                </div>
+                <p class="text-sm text-red-800 bg-red-200 p-2 rounded">
+                    <span class="font-bold text-red-900"><ruby>先⽣<rt>せんせい</rt></ruby>‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ：</span><ruby>生成<rt>せいせい</rt></ruby>AIの<ruby>回答<rt>かいとう</rt></ruby>を <span class="font-extrabold">「<ruby>疑<rt>うたが</rt></ruby>う→<ruby>調<rt>しら</rt></ruby>べる→<ruby>判断<rt>はんだん</rt></ruby>する」</span>という<ruby>思考<rt>しこう</rt></ruby>プロセスを<ruby>習慣<rt>しゅうかん</rt></ruby>づけさせ、<ruby>真<rt>しん</rt></ruby>の<ruby>情報<rt>じょうほう</rt></ruby><ruby>活用<rt>かつよう</rt></ruby><ruby>能力<rt>のうりょく</rt></ruby>を<ruby>習得<rt>しゅうとく</rt></ruby>する<ruby>機会<rt>きかい</rt></ruby>にしましょう。
+                </p>
+            </div>
+
+            <!-- 場面 2: アイデア出しのサポートとして使う -->
+            <div class="p-5 rounded-xl shadow-lg border-l-4 border-blue-500 bg-blue-50">
+                <h4 class="text-2xl font-bold mb-3 text-blue-700">2. <ruby>新<rt>あたら</rt></ruby>しいアイデアをたくさん<ruby>⾒<rt>み</rt></ruby>つけよう！ 〜アイデア<ruby>出<rt>だ</rt></ruby>しのサポートとして<ruby>使<rt>つか</rt></ruby>う〜</h4>
+                <p class="mb-3 text-gray-700"><span class="font-bold text-blue-600"><ruby>使<rt>つか</rt></ruby>い<ruby>⽅<rt>かた</rt></ruby>：</span><ruby>生成<rt>せいせい</rt></ruby>AIはとても<ruby>力<rt>ちから</rt></ruby>になるアイデア<ruby>出<rt>だ</rt></ruby>しのパートナーになってくれます。<ruby>決<rt>き</rt></ruby>まっているルール（<ruby>制約<rt>せいやく</rt></ruby>）の<ruby>中<rt>なか</rt></ruby>でできる<ruby>解決<rt>かいけつ</rt></ruby><ruby>策<rt>さく</rt></ruby>を<ruby>探<rt>さが</rt></ruby>すことで、もっと<ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>で<ruby>役<rt>やく</rt></ruby>に<ruby>立<rt>た</rt></ruby>つアイデアを<ruby>見<rt>み</rt></ruby>つけられます。</p>
+                <div class="p-3 bg-white rounded-lg border-t-2 border-blue-300 mb-3">
+                    <p class="font-semibold text-gray-800 mb-1">プロンプト<ruby>例<rt>れい</rt></ruby></p>
+                    <code class="text-sm block whitespace-pre-wrap bg-gray-100 p-2 rounded font-mono">"あなたは<ruby>私<rt>わたし</rt></ruby>の<ruby>友達<rt>ともだち</rt></ruby>です。 私は<ruby>⼩学<rt>しょうがく</rt></ruby> 5 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>夏休<rt>なつやす</rt></ruby>みの<ruby>⾃由<rt>じゆう</rt></ruby><ruby>研究<rt>けんきゅう</rt></ruby>として、<ruby>家<rt>いえ</rt></ruby>でできる<ruby>実験<rt>じっけん</rt></ruby>をしながら<ruby>研究<rt>けんきゅう</rt></ruby>をしたいと思っています。 <ruby>雲<rt>くも</rt></ruby>に<ruby>興味<rt>きょうみ</rt></ruby>があるので、<ruby>雲<rt>くも</rt></ruby>に<ruby>関係<rt>かんけい</rt></ruby>する<ruby>研究<rt>けんきゅう</rt></ruby>を<ruby>考<rt>かんが</rt></ruby>えています。 <span class="font-bold text-red-700"><ruby>材料<rt>ざいりょう</rt></ruby>が<ruby>少<rt>すく</rt></ruby>なくて、<ruby>家族<rt>かぞく</rt></ruby>と<ruby>⼀緒<rt>いっしょ</rt></ruby>にできるアイデア</span>を 3 つ、<ruby>教<rt>おし</rt></ruby>えてください。"</code>
+                </div>
+                <p class="text-sm text-blue-800 bg-blue-200 p-2 rounded">
+                    <span class="font-bold text-blue-900"><ruby>先⽣<rt>せんせい</rt></ruby>‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ：</span><ruby>生成<rt>せいせい</rt></ruby>AIは、「<ruby>発想<rt>はっそう</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げる」ための<ruby>道具<rt>どうぐ</rt></ruby>として<ruby>⼤変<rt>たいへん</rt></ruby><ruby>有効<rt>ゆうこう</rt></ruby>なものです。<ruby>児童<rt>じどう</rt></ruby><ruby>⽣徒<rt>せいと</rt></ruby>の<ruby>創造<rt>そうぞう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>刺激<rt>しげき</rt></ruby>し、<ruby>探究<rt>たんきゅう</rt></ruby><ruby>心<rt>しん</rt></ruby>を<ruby>育<rt>はぐく</rt></ruby>む<ruby>学習<rt>がくしゅう</rt></ruby>の<ruby>心強<rt>こころづよ</rt></ruby>いパートナーになります。
+                </p>
+            </div>
+
+            <!-- 場面 3: 複雑な内容のやさしい説明 -->
+            <div class="p-5 rounded-xl shadow-lg border-l-4 border-yellow-500 bg-yellow-50">
+                <h4 class="text-2xl font-bold mb-3 text-yellow-700">3. <ruby>難<rt>むずか</rt></ruby>しいことを<ruby>分<rt>わ</rt></ruby>かりやすく<ruby>教<rt>おし</rt></ruby>えてもらおう！ 〜<ruby>複雑<rt>ふくざつ</rt></ruby>な<ruby>内容<rt>ないよう</rt></ruby>のやさしい<ruby>説明<rt>せつめい</rt></ruby>〜</h4>
+                <p class="mb-3 text-gray-700"><span class="font-bold text-yellow-600"><ruby>使<rt>つか</rt></ruby>い<ruby>⽅<rt>かた</rt></ruby>：</span><ruby>学校<rt>がっこう</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>や<ruby>本<rt>ほん</rt></ruby>で、むずかしい<ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>やよくわからない<ruby>説明<rt>せつめい</rt></ruby>に<ruby>出会<rt>であ</rt></ruby>うことはありませんか？そんな<ruby>時<rt>とき</rt></ruby>は、<ruby>生成<rt>せいせい</rt></ruby>AIに<ruby>聞<rt>き</rt></ruby>いてみてください！<ruby>生成<rt>せいせい</rt></ruby>AIは、むずかしいことを、わかりやすい<ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>で、やさしく<ruby>説明<rt>せつめい</rt></ruby>してくれます。</p>
+                <div class="p-3 bg-white rounded-lg border-t-2 border-yellow-300 mb-3">
+                    <p class="font-semibold text-gray-800 mb-1">プロンプト<ruby>例<rt>れい</rt></ruby></p>
+                    <code class="text-sm block whitespace-pre-wrap bg-gray-100 p-2 rounded font-mono">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 2 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。 <ruby>最近<rt>さいきん</rt></ruby>、「サステナブル」という<ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>をよく<ruby>聞<rt>き</rt></ruby>きます。 これは『<ruby>持続<rt>じぞく</rt></ruby><ruby>可能性<rt>かのうせい</rt></ruby>』という<ruby>意味<rt>いみ</rt></ruby>だと、<ruby>社会<rt>しゃかい</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>で<ruby>学<rt>まな</rt></ruby>びましたが、<span class="font-bold text-red-700"><ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>にどのような<ruby>考<rt>かんが</rt></ruby>え<ruby>⽅<rt>かた</rt></ruby>で、なぜ<ruby>現代<rt>げんだい</rt></ruby><ruby>社会<rt>しゃかい</rt></ruby>において<ruby>重要<rt>じゅうよう</rt></ruby><ruby>視<rt>し</rt></ruby>されているのでしょうか。</span> <ruby>中学<rt>ちゅうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>にもわかるように、<ruby>歴史<rt>れきし</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>背景<rt>はいけい</rt></ruby>や<ruby>世界<rt>せかい</rt></ruby>の<ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>取<rt>と</rt></ruby>り<ruby>組<rt>く</rt></ruby>み<ruby>例<rt>れい</rt></ruby>を<ruby>交<rt>まじ</rt></ruby>えながら、<ruby>説明<rt>せつめい</rt></ruby>してください。"</code>
+                </div>
+                <p class="text-sm text-yellow-800 bg-yellow-200 p-2 rounded">
+                    <span class="font-bold text-yellow-900"><ruby>先⽣<rt>せんせい</rt></ruby>‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ：</span><ruby>生成<rt>せいせい</rt></ruby>AIは、お<ruby>子<rt>こ</rt></ruby><ruby>様<rt>さま</rt></ruby>ひとりひとりの<ruby>理解<rt>りかい</rt></ruby><ruby>度<rt>ど</rt></ruby>に<ruby>合<rt>あ</rt></ruby>わせて<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>加工<rt>かこう</rt></ruby>し、<ruby>提供<rt>ていきょう</rt></ruby>できるという<ruby>大<rt>おお</rt></ruby>きな<ruby>利点<rt>りてん</rt></ruby>を<ruby>持<rt>も</rt></ruby>っています。<ruby>生成<rt>せいせい</rt></ruby>AIは、<span class="font-extrabold">「<ruby>個別<rt>こべつ</rt></ruby><ruby>最適化<rt>さいてきか</rt></ruby>された<ruby>学習<rt>がくしゅう</rt></ruby>」</span>をサポートします。
+                </p>
+            </div>
+
+            <!-- 場面 4: ⾔葉の橋渡し役 -->
+            <div class="p-5 rounded-xl shadow-lg border-l-4 border-purple-500 bg-purple-50">
+                <h4 class="text-2xl font-bold mb-3 text-purple-700">4. <ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>の<ruby>橋渡<rt>はしわた</rt></ruby>し<ruby>役<rt>やく</rt></ruby>に <ruby>生成<rt>せいせい</rt></ruby>AI を<ruby>使<rt>つか</rt></ruby>おう！ 〜やさしい<ruby>⽇<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>で<ruby>教<rt>おし</rt></ruby>えて！〜</h4>
+                <p class="mb-3 text-gray-700"><span class="font-bold text-purple-600"><ruby>使<rt>つか</rt></ruby>い<ruby>⽅<rt>かた</rt></ruby>：</span><ruby>日本<rt>にほん</rt></ruby><ruby>語<rt>ご</rt></ruby>を<ruby>勉強<rt>べんきょう</rt></ruby>しているみなさんが、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>で「これってどういう<ruby>意味<rt>いみ</rt></ruby>だろう？」と<ruby>困<rt>こま</rt></ruby>った<ruby>時<rt>とき</rt></ruby>に<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>助<rt>たす</rt></ruby>けてくれます。<ruby>難<rt>むずか</rt></ruby>しい<ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>も、<ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>分<rt>わ</rt></ruby>かりやすい<ruby>⾔<rt>こと</rt></ruby><ruby>葉<rt>ば</rt></ruby>に<ruby>⾔<rt>い</rt></ruby>い<ruby>換<rt>か</rt></ruby>えて<ruby>説明<rt>せつめい</rt></ruby>してくれるから、<ruby>安<rt>あん</rt></ruby><ruby>心<rt>しん</rt></ruby>して<ruby>質問<rt>しつもん</rt></ruby>してみてね。</p>
+                <div class="p-3 bg-white rounded-lg border-t-2 border-purple-300 mb-3">
+                    <p class="font-semibold text-gray-800 mb-1">プロンプト<ruby>例<rt>れい</rt></ruby></p>
+                    <code class="text-sm block whitespace-pre-wrap bg-gray-100 p-2 rounded font-mono">"あなたは<ruby>⼩学<rt>しょうがく</rt></ruby><ruby>校<rt>こう</rt></ruby>の<ruby>優<rt>やさ</rt></ruby>しい<ruby>先⽣<rt>せんせい</rt></ruby>です。 わたしは<ruby>⽇<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>が<ruby>得意<rt>とくい</rt></ruby>ではないです。 <ruby>算数<rt>さんすう</rt></ruby>の「<ruby>分数<rt>ぶんすう</rt></ruby>の<ruby>⾜<rt>た</rt></ruby>し<ruby>算<rt>ざん</rt></ruby>」について、<span class="font-bold text-red-700">1 <ruby>⽂<rt>ぶん</rt></ruby>ごとにドイツ<ruby>語<rt>ご</rt></ruby>と<ruby>⽇<rt>に</rt></ruby><ruby>本<rt>ほん</rt></ruby><ruby>語<rt>ご</rt></ruby>で<ruby>説明<rt>せつめい</rt></ruby>してください。 漢字にはすべてふりがなをつけてください。 大切な⾔葉は太字にしてください。ステップごとに<ruby>分<rt>わ</rt></ruby>けて、<ruby>番号<rt>ばんごう</rt></ruby>をふって<ruby>説明<rt>せつめい</rt></ruby>してください。</span>"</code>
+                </div>
+                <p class="text-sm text-purple-800 bg-purple-200 p-2 rounded">
+                    <span class="font-bold text-purple-900"><ruby>先⽣<rt>せんせい</rt></ruby>‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ：</span><ruby>生成<rt>せいせい</rt></ruby>AIは、<ruby>日本<rt>にほん</rt></ruby><ruby>語<rt>ご</rt></ruby>に<ruby>慣<rt>な</rt></ruby>れていない<ruby>児童<rt>じどう</rt></ruby><ruby>⽣徒<rt>せいと</rt></ruby>が、<ruby>⾃信<rt>じしん</rt></ruby>を<ruby>持<rt>も</rt></ruby>って<ruby>学校<rt>がっこう</rt></ruby><ruby>⽣活<rt>せいかつ</rt></ruby>を<ruby>送<rt>おく</rt></ruby>るための<ruby>強<rt>きょう</rt></ruby><ruby>⼒<rt>りょく</rt></ruby>なツールになります。
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. ⼩学⽣のみなさんへ 生成AI とあそぼう！学ぼう！ -->
+    <div class="page-break"></div>
+    <section id="section4" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-yellow-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-yellow-700">4. <ruby>⼩学<rt>しょうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>のみなさんへ <ruby>生成<rt>せいせい</rt></ruby>AI とあそぼう！<ruby>学<rt>まな</rt></ruby>ぼう！</h3>
+
+        <div class="space-y-6">
+            <!-- 1. 宿題や調べ学習のヒントをもらおう！ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">1. <ruby>宿題<rt>しゅくだい</rt></ruby>や<ruby>調<rt>しら</rt></ruby>べ<ruby>学習<rt>がくしゅう</rt></ruby>のヒントをもらおう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"⼩学 4 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>の<ruby>僕<rt>ぼく</rt></ruby>が、<ruby>夏休<rt>なつやす</rt></ruby>みの<ruby>⾃由<rt>じゆう</rt></ruby><ruby>研究<rt>けんきゅう</rt></ruby>で<ruby>簡単<rt>かんたん</rt></ruby>にできて<ruby>⾯<rt>おも</rt></ruby><ruby>⽩<rt>しろ</rt></ruby>いテーマを 3 つ<ruby>教<rt>おし</rt></ruby>えて！ なんでそれが<ruby>⾯<rt>おも</rt></ruby><ruby>⽩<rt>しろ</rt></ruby>いのかも<ruby>教<rt>おし</rt></ruby>えてね。"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「⼩学 4 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>」を「⼩学〇<ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>」に<ruby>変<rt>か</rt></ruby>えたり、「<ruby>⾃由<rt>じゆう</rt></ruby><ruby>研究<rt>けんきゅう</rt></ruby>」を「<ruby>調<rt>しら</rt></ruby>べ<ruby>学習<rt>がくしゅう</rt></ruby>」に<ruby>変<rt>か</rt></ruby>えたりできます。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>出<rt>だ</rt></ruby>してくれたアイデアをそのままマネするだけじゃもったいない！<span class="font-extrabold text-red-900">「なんでだろう？」「もっと<ruby>知<rt>し</rt></ruby>りたいな！」って、きみの<ruby>好奇<rt>こうき</rt></ruby><ruby>心<rt>しん</rt></ruby>で<ruby>調<rt>しら</rt></ruby>べてみましょう！</span></p>
+            </div>
+            
+            <!-- 2. 専⾨家になって相談にのってもらおう！ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">2. <ruby>専⾨<rt>せんもん</rt></ruby><ruby>家<rt>か</rt></ruby>になって<ruby>相談<rt>そうだん</rt></ruby>にのってもらおう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>⼩学<rt>しょうがく</rt></ruby> 5 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>物語<rt>ものがたり</rt></ruby>を<ruby>書<rt>か</rt></ruby>いています。あなたは<span class="font-bold text-indigo-700">プロの<ruby>作家<rt>さっか</rt></ruby></span>です。<ruby>物語<rt>ものがたり</rt></ruby>を<ruby>書<rt>か</rt></ruby>くのが<ruby>上<rt>じょう</rt></ruby><ruby>⼿<rt>ず</rt></ruby>になるためにはどうすればいいか、<ruby>私<rt>わたし</rt></ruby>にアドバイスをください。"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「<ruby>科学者<rt>かがくしゃ</rt></ruby>」や「<ruby>歴史<rt>れきし</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>」など、<ruby>相談<rt>そうだん</rt></ruby>したい<ruby>専門<rt>せんもん</rt></ruby><ruby>家<rt>か</rt></ruby>を<ruby>変<rt>か</rt></ruby>えてみましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIはアドバイスをくれますが、<ruby>本当<rt>ほんとう</rt></ruby>に<ruby>大切<rt>たいせつ</rt></ruby>なのは、あなた<ruby>自身<rt>じしん</rt></ruby>の<ruby>考<rt>かんが</rt></ruby>えや<ruby>気持<rt>きも</rt></ruby>ちです。アドバイスをそのまま<ruby>使<rt>つか</rt></ruby>うだけでなく、<span class="font-extrabold text-red-900">「<ruby>私<rt>わたし</rt></ruby>ならどうする？」って<ruby>自分<rt>じぶん</rt></ruby>の<ruby>頭<rt>あたま</rt></ruby>で<ruby>考<rt>かんが</rt></ruby>えてね！</span></p>
+            </div>
+            
+            <!-- 3. 苦⼿なことや、わからないことを聞いてみよう！ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">3. <ruby>苦⼿<rt>にがて</rt></ruby>なことや、わからないことを<ruby>聞<rt>き</rt></ruby>いてみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"<ruby>割合<rt>わりあい</rt></ruby>の<ruby>計算<rt>けいさん</rt></ruby>が<ruby>苦⼿<rt>にがて</rt></ruby>な<ruby>⼩学<rt>しょうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>割合<rt>わりあい</rt></ruby>の<ruby>計算<rt>けいさん</rt></ruby>のやり<ruby>⽅<rt>かた</rt></ruby>を、<span class="font-bold text-indigo-700">⾯<rt>おも</rt></ruby><ruby>⽩<rt>しろ</rt></ruby>くわかるように<ruby>説明<rt>せつめい</rt></ruby>してください。</span>"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「<ruby>国語<rt>こくご</rt></ruby>の<ruby>漢字<rt>かんじ</rt></ruby>」や「<ruby>理科<rt>りか</rt></ruby>の<ruby>電気<rt>でんき</rt></ruby>」など、<ruby>苦⼿<rt>にがて</rt></ruby>な<ruby>教科<rt>きょうか</rt></ruby>やテーマに<ruby>変<rt>か</rt></ruby>えたり、「<ruby>身近<rt>みぢか</rt></ruby>な<ruby>例<rt>れい</rt></ruby>を<ruby>使<rt>つか</rt></ruby>って」など、<ruby>説明<rt>せつめい</rt></ruby>の<ruby>仕<rt>しか</rt></ruby><ruby>方<rt>た</rt></ruby>を<ruby>指定<rt>してい</rt></ruby>してみたりしましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>教<rt>おし</rt></ruby>えてくれたことは、すぐに<ruby>信<rt>しん</rt></ruby>じる<ruby>前<rt>まえ</rt></ruby>に、<span class="font-extrabold text-red-900"><ruby>教科書<rt>きょうかしょ</rt></ruby>やおうちの<ruby>人<rt>ひと</rt></ruby>、<ruby>先生<rt>せんせい</rt></ruby>に<ruby>確認<rt>かくにん</rt></ruby>してみましょう！</span><ruby>特<rt>とく</rt></ruby>に、テストの<ruby>答<rt>こた</rt></ruby>えや<ruby>大事<rt>だいじ</rt></ruby>な<ruby>情報<rt>じょうほう</rt></ruby>は、<ruby>必<rt>かな</rt></ruby>ず<ruby>自分<rt>じぶん</rt></ruby>で<ruby>確<rt>たし</rt></ruby>かめるのがルールです。</p>
+            </div>
+
+            <!-- 4. おもしろい⾖知識を教えてもらおう！ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">4. おもしろい<ruby>⾖<rt>まめ</rt></ruby><ruby>知識<rt>ちしき</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてもらおう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>小学<rt>しょうがく</rt></ruby> 6 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>友達<rt>ともだち</rt></ruby>に<ruby>話<rt>はな</rt></ruby>したら「へぇ～！」ってなるような、<span class="font-bold text-indigo-700"><ruby>宇宙<rt>うちゅう</rt></ruby>のおもしろい<ruby>豆<rt>まめ</rt></ruby><ruby>知識<rt>ちしき</rt></ruby>を 10 <ruby>個<rt>こ</rt></ruby></span><ruby>教<rt>おし</rt></ruby>えて"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> <ruby>知<rt>し</rt></ruby>りたいテーマを「<ruby>宇宙<rt>うちゅう</rt></ruby>」や「<ruby>歴史<rt>れきし</rt></ruby>」に<ruby>変<rt>か</rt></ruby>えたり、「<ruby>詳<rt>くわ</rt></ruby>しく<ruby>説明<rt>せつめい</rt></ruby>して」など、<ruby>説明<rt>せつめい</rt></ruby>の<ruby>長<rt>なが</rt></ruby>さを<ruby>変<rt>か</rt></ruby>えてみたりしましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIは<ruby>間違<rt>まちが</rt></ruby>った<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>言<rt>い</rt></ruby>ってしまうこともあるので、<ruby>豆<rt>まめ</rt></ruby><ruby>知識<rt>ちしき</rt></ruby>を<ruby>友達<rt>ともだち</rt></ruby>に<ruby>話<rt>はな</rt></ruby>す<ruby>前<rt>まえ</rt></ruby>に、<span class="font-extrabold text-red-900">「<ruby>本当<rt>ほんとう</rt></ruby>にそうかな？」と、<ruby>図鑑<rt>ずかん</rt></ruby>や<ruby>信頼<rt>しんらい</rt></ruby>できるサイトで<ruby>調<rt>しら</rt></ruby>べてみましょう！</span></p>
+            </div>
+
+            <!-- 5. もっと知りたいときはどうする？ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">5. もっと<ruby>知<rt>し</rt></ruby>りたいときはどうする？</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>⼩学<rt>しょうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。さっき<ruby>教<rt>おし</rt></ruby>えてもらった「キリンの<ruby>⾆<rt>した</rt></ruby>が<ruby>黒<rt>くろ</rt></ruby>い<ruby>理由<rt>りゆう</rt></ruby>」について、もっと<ruby>詳<rt>くわ</rt></ruby>しく<ruby>知<rt>し</rt></ruby>りたいです。もっとわかりやすく<ruby>教<rt>おし</rt></ruby>えてください。"</code></p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIに<ruby>質問<rt>しつもん</rt></ruby>する<ruby>時<rt>とき</rt></ruby>は、<span class="font-extrabold text-red-900">「なぜそれが<ruby>知<rt>し</rt></ruby>りたいか」という<ruby>目的<rt>もくてき</rt></ruby>をはっきりさせると</span>、もっと<ruby>良<rt>よ</rt></ruby>い<ruby>答<rt>こた</rt></ruby>えがもらえます。</p>
+            </div>
+
+            <!-- 6. 生成AIの答えが変だったときは？ -->
+            <div class="p-4 bg-yellow-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-yellow-800">6. <ruby>生成<rt>せいせい</rt></ruby>AI の<ruby>答<rt>こた</rt></ruby>えが<ruby>変<rt>へん</rt></ruby>だったときは？</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700"><ruby>使<rt>つか</rt></ruby>い<ruby>⽅<rt>かた</rt></ruby>:</span> 「やり<ruby>直<rt>なお</rt></ruby>す」ボタンを<ruby>押<rt>お</rt></ruby>すと、もう<ruby>一度<rt>いちど</rt></ruby><ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>答<rt>こた</rt></ruby>えを<ruby>考<rt>かんが</rt></ruby>えてくれます。また、「<ruby>回答<rt>かいとう</rt></ruby>を<ruby>再<rt>さい</rt></ruby><ruby>確認<rt>かくにん</rt></ruby>」ボタンを<ruby>押<rt>お</rt></ruby>すと、<ruby>回答<rt>かいとう</rt></ruby>が<ruby>正<rt>ただ</rt></ruby>しいかどうか<ruby>確認<rt>かくにん</rt></ruby>してくれます。</p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> <span class="font-bold text-indigo-700">「<ruby>別<rt>べつ</rt></ruby>の<ruby>言葉<rt>ことば</rt></ruby>で<ruby>説明<rt>せつめい</rt></ruby>して」</span>など、プロンプトで<ruby>願<rt>ねが</rt></ruby>いしてみましょう！</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>間違<rt>まちが</rt></ruby>ったことを<ruby>言<rt>い</rt></ruby>っても、<span class="font-extrabold text-red-900"><ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>責<rt>せ</rt></ruby>めたり、ひどい<ruby>言葉<rt>ことば</rt></ruby>を<ruby>使<rt>つか</rt></ruby>ったりするのはやめましょう！</span> インターネットで<ruby>人<rt>ひと</rt></ruby>と<ruby>交流<rt>こうりゅう</rt></ruby>する<ruby>時<rt>とき</rt></ruby>も<ruby>同<rt>おな</rt></ruby>じで、<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>を<ruby>尊重<rt>そんちょう</rt></ruby>し、<ruby>正<rt>ただ</rt></ruby>しく<ruby>接<rt>せっ</rt></ruby>することが<ruby>大切<rt>たいせつ</rt></ruby>です。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 中学生のみなさんへ 生成AIでもっと広がる！みなさんの可能性 -->
+    <div class="page-break"></div>
+    <section id="section5" class="mb-16 p-6 bg-white rounded-xl shadow-lg border-t-8 border-indigo-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-indigo-700">5. <ruby>中学<rt>ちゅうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>のみなさんへ <ruby>生成<rt>せいせい</rt></ruby>AIで<ruby>広<rt>ひろ</rt></ruby>がる！みなさんの<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby></h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- 1. 学習効率 UP！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">1. <ruby>学習<rt>がくしゅう</rt></ruby><ruby>効率<rt>こうりつ</rt></ruby> UP！ <ruby>生成<rt>せいせい</rt></ruby>AI にコーチになってもらおう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"中学 2 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>の<ruby>⽣徒<rt>せいと</rt></ruby>です。 <ruby>次<rt>つぎ</rt></ruby>の<ruby>定期<rt>ていき</rt></ruby>テストの<ruby>数学<rt>すうがく</rt></ruby>の<ruby>勉強<rt>べんきょう</rt></ruby>を<span class="font-bold text-red-700"><ruby>効率<rt>こうりつ</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>進<rt>すす</rt></ruby>めるために</span>、[<ruby>生成<rt>せいせい</rt></ruby>AI] をどう<ruby>活<rt>かつ</rt></ruby><ruby>⽤<rt>よう</rt></ruby>すればいいか、<span class="font-bold text-red-700"><ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>⽅法<rt>ほうほう</rt></ruby>を 3 つ</span><ruby>教<rt>おし</rt></ruby>えてください。<ruby>⾒<rt>み</rt></ruby>やすい<span class="font-bold text-red-700"><ruby>表<rt>ひょう</rt></ruby><ruby>形式<rt>けいしき</rt></ruby>で</span><ruby>教<rt>おし</rt></ruby>えてください。"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「<ruby>数学<rt>すうがく</rt></ruby>」を「<ruby>高校<rt>こうこう</rt></ruby><ruby>入試<rt>にゅうし</rt></ruby>に<ruby>役<rt>やく</rt></ruby><ruby>立<rt>た</rt></ruby>つ<ruby>社会<rt>しゃかい</rt></ruby>の<ruby>要点<rt>ようてん</rt></ruby>」など、より<ruby>専門<rt>せんもん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>学習<rt>がくしゅう</rt></ruby><ruby>目的<rt>もくてき</rt></ruby>に<ruby>変<rt>か</rt></ruby>えてみましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> 「<ruby>表<rt>ひょう</rt></ruby><ruby>形式<rt>けいしき</rt></ruby>にして」と<ruby>指示<rt>しじ</rt></ruby>すると、<ruby>生成<rt>せいせい</rt></ruby>AIは<ruby>回答<rt>かいとう</rt></ruby>を<ruby>表<rt>ひょう</rt></ruby>にまとめてくれます。<span class="font-extrabold text-red-900"><ruby>生成<rt>せいせい</rt></ruby>AIは<ruby>勉強<rt>べんきょう</rt></ruby>をサポートしてくれますが、<ruby>最終<rt>さいしゅう</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>理解<rt>りかい</rt></ruby>して<ruby>身<rt>み</rt></ruby>につけるのはあなた<ruby>自身<rt>じしん</rt></ruby>です。</span></p>
+            </div>
+            
+            <!-- 2. 英語がもっと好きになる！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">2. <ruby>英語<rt>えいご</rt></ruby>がもっと<ruby>好<rt>す</rt></ruby>きになる！ <ruby>生成<rt>せいせい</rt></ruby>AIと<ruby>楽<rt>たの</rt></ruby>しく<ruby>英<rt>えい</rt></ruby><ruby>会話<rt>かいわ</rt></ruby>をしてみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 1 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。これから<ruby>英語<rt>えいご</rt></ruby>で<ruby>⾃<rt>じ</rt></ruby><ruby>⼰<rt>こ</rt></ruby><ruby>紹介<rt>しょうかい</rt></ruby>の<ruby>練習<rt>れんしゅう</rt></ruby>をしたいです。私が<ruby>話<rt>はな</rt></ruby>した<ruby>英語<rt>えいご</rt></ruby>を、<span class="font-bold text-red-700">もっと<ruby>自然<rt>しぜん</rt></ruby>な<ruby>表現<rt>ひょうげん</rt></ruby>に<ruby>直<rt>なお</rt></ruby>してくれたり、アドバイスをくれたりする<ruby>先⽣<rt>せんせい</rt></ruby>になって</span>ください。"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> ほしいアドバイスの<ruby>内容<rt>ないよう</rt></ruby>を「<ruby>英語<rt>えいご</rt></ruby>で<ruby>間違<rt>まちが</rt></ruby>いがあったら、<ruby>文法<rt>ぶんぽう</rt></ruby>の<ruby>解説<rt>かいせつ</rt></ruby>もつけて<ruby>教<rt>おし</rt></ruby>えてください」のように<ruby>詳<rt>くわ</rt></ruby>しく<ruby>伝<rt>つた</rt></ruby>えてみましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIは、あなただけの<ruby>英語<rt>えいご</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>になってくれます。<span class="font-extrabold text-red-900"><ruby>間違<rt>まちが</rt></ruby>えても<ruby>恥<rt>は</rt></ruby>ずかしくないので、どんどん<ruby>話<rt>はな</rt></ruby>しかけてみましょう！</span></p>
+            </div>
+
+            <!-- 3. グループ活動の強い味⽅！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">3. グループ<ruby>活動<rt>かつどう</rt></ruby>の<ruby>強<rt>つよ</rt></ruby>い<ruby>味方<rt>みかた</rt></ruby>！ <ruby>考<rt>かんが</rt></ruby>えを<ruby>深<rt>ふか</rt></ruby>めたいときに<ruby>使<rt>つか</rt></ruby>ってみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私たちは<ruby>中学<rt>ちゅうがく</rt></ruby> 2 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>先<rt>せん</rt></ruby><ruby>⽇<rt>じつ</rt></ruby><ruby>開催<rt>かいさい</rt></ruby>した<ruby>⽂<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby><ruby>祭<rt>さい</rt></ruby>の<ruby>振<rt>ふ</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>りをしています。これまでに「<ruby>企画<rt>きかく</rt></ruby>が<ruby>盛<rt>も</rt></ruby>り<ruby>上<rt>あ</rt></ruby>がって<ruby>良<rt>よ</rt></ruby>かった」「<ruby>準備<rt>じゅんび</rt></ruby><ruby>期間<rt>きかん</rt></ruby>が<ruby>⾜<rt>た</rt></ruby>りなかった」という<ruby>意⾒<rt>いけん</rt></ruby>が<ruby>出<rt>で</rt></ruby>ました。 <span class="font-bold text-red-700">この<ruby>意⾒<rt>いけん</rt></ruby>をさらに<ruby>深<rt>ふか</rt></ruby>く<ruby>掘<rt>ほ</rt></ruby>り<ruby>下<rt>さ</rt></ruby>げて、<ruby>次<rt>つぎ</rt></ruby>の<ruby>⽂<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby><ruby>祭<rt>さい</rt></ruby>に<ruby>活<rt>い</rt></ruby>かすための<ruby>視点<rt>してん</rt></ruby>や、<ruby>議論<rt>ぎろん</rt></ruby>すべきテーマを 3 つ<ruby>提案<rt>ていあん</rt></ruby>してください。</span>"</code></p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIは、<span class="font-extrabold text-red-900"><ruby>自分<rt>じぶん</rt></ruby>たちの<ruby>体験<rt>たいけん</rt></ruby>を<ruby>客観<rt>きゃっかん</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>見<rt>み</rt></ruby>つめ<ruby>直<rt>なお</rt></ruby>し、<ruby>次<rt>つぎ</rt></ruby>の<ruby>行動<rt>こうどう</rt></ruby>につなげるためのヒントをくれる<ruby>頼<rt>たの</rt></ruby>もしいパートナー</span>です。</p>
+            </div>
+            
+            <!-- 4. 探究学習や調べ学習で情報を集めたいときに使ってみよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">4. <ruby>探究<rt>たんきゅう</rt></ruby><ruby>学習<rt>がくしゅう</rt></ruby>や<ruby>調<rt>しら</rt></ruby>べ<ruby>学習<rt>がくしゅう</rt></ruby>で<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>めたいときに<ruby>使<rt>つか</rt></ruby>ってみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"あなたは<span class="font-bold text-indigo-700"><ruby>⾷品<rt>しょくひん</rt></ruby>ロスについての<ruby>専⾨<rt>せんもん</rt></ruby><ruby>家<rt>か</rt></ruby></span>です。<ruby>探究<rt>たんきゅう</rt></ruby><ruby>学習<rt>がくしゅう</rt></ruby>で「<ruby>⾷品<rt>しょくひん</rt></ruby>ロス」について<ruby>調<rt>しら</rt></ruby>べています。私たち<ruby>中学<rt>ちゅうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>が、この<ruby>問題<rt>もんだい</rt></ruby>について<ruby>考<rt>かんが</rt></ruby>えるための<span class="font-bold text-red-700">「<ruby>問<rt>と</rt></ruby>い」と、その<ruby>答<rt>こた</rt></ruby>えを<ruby>探<rt>さが</rt></ruby>すための「ヒント」を3つずつ<ruby>提案<rt>ていあん</rt></ruby>してください。<ruby>答<rt>こた</rt></ruby>えそのものは<ruby>⾔<rt>い</rt></ruby>わないでください。</span>"</code></p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <span class="font-extrabold text-red-900"><ruby>生成<rt>せいせい</rt></ruby>AIに「<ruby>答<rt>こた</rt></ruby>えを<ruby>⾔<rt>い</rt></ruby>わないで」と<ruby>願<rt>ねが</rt></ruby>いすると、<ruby>調<rt>しら</rt></ruby>べるための「<ruby>道筋<rt>みちすじ</rt></ruby>」を<ruby>手<rt>て</rt></ruby>に<ruby>⼊<rt>い</rt></ruby>れることができます。</span><ruby>生成<rt>せいせい</rt></ruby>AIがくれたヒントをもとに、<ruby>本<rt>ほん</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んだり、<ruby>人<rt>ひと</rt></ruby>に<ruby>聞<rt>き</rt></ruby>いたりして、<span class="font-extrabold text-red-900"><ruby>自分<rt>じぶん</rt></ruby>だけの「<ruby>発見<rt>はっけん</rt></ruby>」をすることが<ruby>一番<rt>いちばん</rt></ruby><ruby>大切<rt>たいせつ</rt></ruby></span>です。</p>
+            </div>
+
+            <!-- 5. クリエイティブな活動のアイデアがほしいときに使ってみよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">5. クリエイティブな<ruby>活動<rt>かつどう</rt></ruby>のアイデアがほしいときに<ruby>使<rt>つか</rt></ruby>ってみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 1 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>⽂<rt>ぶん</rt></ruby><ruby>化<rt>か</rt></ruby><ruby>祭<rt>さい</rt></ruby>で<ruby>発表<rt>はっぴょう</rt></ruby>する<span class="font-bold text-indigo-700"><ruby>新<rt>あたら</rt></ruby>しい<ruby>劇<rt>げき</rt></ruby>のアイデア</span>がほしいです。<ruby>舞台<rt>ぶたい</rt></ruby>は<ruby>学校<rt>がっこう</rt></ruby>、ジャンルはコメディで、<ruby>登場<rt>とうじょう</rt></ruby><ruby>⼈<rt>にん</rt></ruby><ruby>物<rt>ぶつ</rt></ruby>は 4 <ruby>⼈<rt>にん</rt></ruby>、<span class="font-bold text-red-700"><ruby>観客<rt>かんきゃく</rt></ruby>が<ruby>爆笑<rt>ばくしょう</rt></ruby>するような<ruby>意外<rt>いがい</rt></ruby>な<ruby>展開<rt>てんかい</rt></ruby>を 2 つ</span><ruby>提案<rt>ていあん</rt></ruby>してください。"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「<ruby>劇<rt>げき</rt></ruby>」を「ポスターのデザイン」や「<ruby>新<rt>あたら</rt></ruby>しい<ruby>校則<rt>こうそく</rt></ruby>のアイデア」など、やりたいクリエイティブな<ruby>活動<rt>かつどう</rt></ruby>に<ruby>変<rt>か</rt></ruby>えてみましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>生成<rt>せいせい</rt></ruby>したアイデアは、あくまであなたの <span class="font-extrabold text-red-900">「<ruby>創造<rt>そうぞう</rt></ruby>のきっかけ」</span>です。そのまま<ruby>使<rt>つか</rt></ruby>うのではなく、あなたのオリジナリティを<ruby>加<rt>くわ</rt></ruby>えて、<ruby>自分<rt>じぶん</rt></ruby>の<ruby>作品<rt>さくひん</rt></ruby>を<ruby>作<rt>つく</rt></ruby>り<ruby>上<rt>あ</rt></ruby>げましょう。</p>
+            </div>
+            
+            <!-- 6. ⾃分の⽂章をもっとよくしたいときの 推敲のパートナーとして使ってみよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">6. <ruby>⾃分<rt>じぶん</rt></ruby>の<ruby>⽂<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>をもっとよくしたいときの <ruby>推敲<rt>すいこう</rt></ruby>のパートナーとして<ruby>使<rt>つか</rt></ruby>ってみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 3 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>⾼校<rt>こうこう</rt></ruby><ruby>⼊試<rt>にゅうし</rt></ruby>の<ruby>⼩<rt>しょう</rt></ruby><ruby>論<rt>ろん</rt></ruby><ruby>⽂<rt>ぶん</rt></ruby>の<ruby>練習<rt>れんしゅう</rt></ruby>をしています。<ruby>テーマ<rt>テーマ</rt></ruby>は『 AI と私たちの<ruby>未来<rt>みらい</rt></ruby>』です。私が<ruby>書<rt>か</rt></ruby>いた<ruby>⽂<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>を、<span class="font-bold text-red-700"><ruby>論理<rt>ろんり</rt></ruby><ruby>的<rt>てき</rt></ruby>で<ruby>説得<rt>せっとく</rt></ruby><ruby>⼒<rt>りょく</rt></ruby>のある<ruby>⽂<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>にするための<ruby>改善<rt>かいぜん</rt></ruby><ruby>点<rt>てん</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてください。</span><ruby>書<rt>か</rt></ruby>き<ruby>直<rt>なお</rt></ruby>しは<ruby>私<rt>わたし</rt></ruby>の<ruby>⼒<rt>ちから</rt></ruby>で<ruby>⾏<rt>おこな</rt></ruby>いたいので、<ruby>模範<rt>もはん</rt></ruby><ruby>解答<rt>かいとう</rt></ruby>は<ruby>⾔<rt>い</rt></ruby>わないでください。（ここに、<ruby>⾃分<rt>じぶん</rt></ruby>で<ruby>書<rt>か</rt></ruby>いた<ruby>⽂<rt>ぶん</rt></ruby><ruby>章<rt>しょう</rt></ruby>を<ruby>⼊<rt>い</rt></ruby><ruby>⼒<rt>りょく</rt></ruby>する）"</code></p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <span class="font-extrabold text-red-900"><ruby>生成<rt>せいせい</rt></ruby>AIが<ruby>作<rt>つく</rt></ruby>った<ruby>文章<rt>ぶんしょう</rt></ruby>をそのまま<ruby>使<rt>つか</rt></ruby>うことは、<ruby>盗作<rt>とうさく</rt></ruby>（<ruby>盗用<rt>とうよう</rt></ruby>）になる<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby>がありますので、<ruby>絶対<rt>ぜったい</rt></ruby>にやめましょう。</span><ruby>生成<rt>せいせい</rt></ruby>AIは、<ruby>小<rt>しょう</rt></ruby><ruby>論<rt>ろん</rt></ruby><ruby>文<rt>ぶん</rt></ruby>や<ruby>面接<rt>めんせつ</rt></ruby>の<ruby>原稿<rt>げんこう</rt></ruby>を<ruby>完璧<rt>かんぺき</rt></ruby>な<ruby>文章<rt>ぶんしょう</rt></ruby>にしてくれるわけではありません。</p>
+            </div>
+            
+            <!-- 7. ⾃分のアイデアをプログラミングで実現させたいときに使ってみよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">7. <ruby>⾃分<rt>じぶん</rt></ruby>のアイデアをプログラミングで<ruby>実現<rt>じつげん</rt></ruby>させたいときに<ruby>使<rt>つか</rt></ruby>ってみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 2 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。プログラミングの<ruby>授業<rt>じゅぎょう</rt></ruby>で、<ruby>簡単<rt>かんたん</rt></ruby>なゲームを<ruby>作<rt>つく</rt></ruby>ってみたいです。<span class="font-bold text-indigo-700">「サイコロを<ruby>振<rt>ふ</rt></ruby>って<ruby>出<rt>で</rt></ruby>た<ruby>⽬<rt>め</rt></ruby>で、キャラクターを<ruby>動<rt>うご</rt></ruby>かすすごろくゲーム」のプログラムを Python で<ruby>作<rt>つく</rt></ruby>るにはどうすればいいか</span><ruby>教<rt>おし</rt></ruby>えてください。コードの<ruby>書<rt>か</rt></ruby>き<ruby>⽅<rt>かた</rt></ruby>も<ruby>初<rt>しょ</rt></ruby><ruby>心<rt>しん</rt></ruby><ruby>者<rt>しゃ</rt></ruby>の<ruby>私<rt>わたし</rt></ruby>にわかるように<ruby>教<rt>おし</rt></ruby>えてください"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「Python」を「JavaScript」や「Scratch」など<ruby>別<rt>べつ</rt></ruby>の<ruby>言語<rt>げんご</rt></ruby>に<ruby>変<rt>か</rt></ruby>えてみましょう。</p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> プログラミングは<ruby>難<rt>むずか</rt></ruby>しい<ruby>時<rt>とき</rt></ruby>、<ruby>生成<rt>せいせい</rt></ruby>AIは、どのようなステップで<ruby>考<rt>かんが</rt></ruby>えればいいか、どのようなプログラムの<ruby>部品<rt>ぶひん</rt></ruby>が<ruby>必要<rt>ひつよう</rt></ruby>かヒントを<ruby>教<rt>おし</rt></ruby>えてくれます。</p>
+            </div>
+            
+            <!-- 8. ⾃分だけの解説書をつくって 教科書の内容を深く理解しよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">8. <ruby>⾃分<rt>じぶん</rt></ruby>だけの<ruby>解説<rt>かいせつ</rt></ruby><ruby>書<rt>しょ</rt></ruby>をつくって <ruby>教科書<rt>きょうかしょ</rt></ruby>の<ruby>内容<rt>ないよう</rt></ruby>を<ruby>深<rt>ふか</rt></ruby>く<ruby>理解<rt>りかい</rt></ruby>しよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"私は<ruby>中学<rt>ちゅうがく</rt></ruby> 3 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>理科<rt>りか</rt></ruby>の<ruby>授業<rt>じゅぎょう</rt></ruby>で「<ruby>原<rt>げん</rt></ruby><ruby>⼦<rt>し</rt></ruby>」について<ruby>勉強<rt>べんきょう</rt></ruby>しました。<ruby>教科書<rt>きょうかしょ</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んでもイメージがわきません。<span class="font-bold text-red-700"><ruby>原<rt>げん</rt></ruby><ruby>⼦<rt>し</rt></ruby>の<ruby>構造<rt>こうぞう</rt></ruby>を、<ruby>中学<rt>ちゅうがく</rt></ruby><ruby>⽣<rt>せい</rt></ruby>にもわかるように、<ruby>⾝近<rt>みぢか</rt></ruby>なものに<ruby>例<rt>たと</rt></ruby>えて<ruby>説明<rt>せつめい</rt></ruby>してください。</span>"</code></p>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-orange-700">こんなふうに<ruby>変<rt>か</rt></ruby>えてみよう！:</span> 「<ruby>原子<rt>げんし</rt></ruby>」を「<ruby>日本<rt>にほん</rt></ruby>の<ruby>歴史<rt>れきし</rt></ruby>の<ruby>流<rt>なが</rt></ruby>れ」「<ruby>英語<rt>えいご</rt></ruby>の<ruby>文法<rt>ぶんぽう</rt></ruby>」など、<ruby>自分<rt>じぶん</rt></ruby>が<ruby>勉強<rt>べんきょう</rt></ruby>している<ruby>内容<rt>ないよう</rt></ruby>に<ruby>変<rt>か</rt></ruby>えてみましょう。</p>
+            </div>
+            
+            <!-- 9. 生成AIに画像をアップロードして質問してみよう！ -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">9. <ruby>生成<rt>せいせい</rt></ruby>AI に<ruby>画像<rt>がぞう</rt></ruby>をアップロードして<ruby>質問<rt>しつもん</rt></ruby>してみよう！</h4>
+                <p class="mb-1 text-gray-700"><span class="font-bold text-green-700">プロンプト サンプル:</span> <code class="bg-gray-200 p-1 rounded text-sm block">"（<ruby>⾒<rt>み</rt></ruby>つけた<ruby>植物<rt>しょくぶつ</rt></ruby>や<ruby>地形<rt>ちけい</rt></ruby>の<ruby>写真<rt>しゃしん</rt></ruby>をアップロードして）私たちは<ruby>中学<rt>ちゅうがく</rt></ruby> 1 <ruby>年<rt>ねん</rt></ruby><ruby>⽣<rt>せい</rt></ruby>です。<ruby>地域<rt>ちいき</rt></ruby>の<ruby>環境<rt>かんきょう</rt></ruby><ruby>問題<rt>もんだい</rt></ruby>について<ruby>調<rt>しら</rt></ruby>べています。最近、この<ruby>植物<rt>しょくぶつ</rt></ruby>が<ruby>河川<rt>かせん</rt></ruby><ruby>敷<rt>じき</rt></ruby>にたくさん<ruby>⽣<rt>は</rt></ruby>えていますが、わたしたちは、これは<span class="font-bold text-red-700"><ruby>外来<rt>がいらい</rt></ruby><ruby>種<rt>しゅ</rt></ruby>なのではないか</span>と<ruby>考<rt>かんが</rt></ruby>えています。この<ruby>植物<rt>しょくぶつ</rt></ruby>の<ruby>名前<rt>なまえ</rt></ruby>と、なぜ<ruby>増<rt>ふ</rt></ruby>えているのか<ruby>教<rt>おし</rt></ruby>えてください。"</code></p>
+                <p class="mt-2 text-sm text-red-700"><span class="font-bold text-red-800"><ruby>生成<rt>せいせい</rt></ruby>AI マスターへのヒント！:</span> <span class="font-extrabold text-red-900"><ruby>気<rt>き</rt></ruby>になったものを<ruby>写真<rt>しゃしん</rt></ruby>に<ruby>撮<rt>と</rt></ruby>り、<ruby>生成<rt>せいせい</rt></ruby>AIにアップロードして、まずは<ruby>自分<rt>じぶん</rt></ruby>の<ruby>意<rt>い</rt></ruby><ruby>見<rt>けん</rt></ruby>や<ruby>仮説<rt>かせつ</rt></ruby>をぶつけてみましょう。</span></p>
+            </div>
+            
+            <!-- 10. 応⽤編: 学校の 1 日と 生成AI -->
+            <div class="p-4 bg-indigo-100 rounded-lg shadow md:col-span-2">
+                <h4 class="text-xl font-bold mb-2 text-indigo-800">10. <ruby>応<rt>おう</rt></ruby><ruby>⽤<rt>よう</rt></ruby><ruby>編<rt>へん</rt></ruby>: <ruby>学校<rt>がっこう</rt></ruby>の 1 <ruby>日<rt>にち</rt></ruby>と <ruby>生成<rt>せいせい</rt></ruby>AI</h4>
+                <p class="mb-3 text-gray-700"><ruby>生成<rt>せいせい</rt></ruby>AIは、みなさんの<ruby>目標<rt>もくひょう</rt></ruby><ruby>達成<rt>たっせい</rt></ruby>と<ruby>成長<rt>せいちょう</rt></ruby>を<ruby>応援<rt>おうえん</rt></ruby>する<ruby>最高<rt>さいこう</rt></ruby>のパートナーです。</p>
+                <ul class="list-disc list-inside space-y-2 text-base ml-4 text-gray-800">
+                    <li><span class="font-semibold text-indigo-700"><ruby>課題<rt>かだい</rt></ruby><ruby>解決<rt>かいけつ</rt></ruby>の<ruby>試行<rt>しこう</rt></ruby><ruby>錯誤<rt>さくご</rt></ruby>を<ruby>促<rt>うなが</rt></ruby>す:</span> スケジュール<ruby>管理<rt>かんり</rt></ruby>の<ruby>効率<rt>こうりつ</rt></ruby><ruby>化<rt>か</rt></ruby>など、<ruby>課題<rt>かだい</rt></ruby><ruby>解決<rt>かいけつ</rt></ruby>の<ruby>過程<rt>かてい</rt></ruby>における<ruby>試行<rt>しこう</rt></ruby><ruby>錯誤<rt>さくご</rt></ruby>を<ruby>促<rt>うなが</rt></ruby>す<ruby>対話<rt>たいわ</rt></ruby><ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>になってもらえます。</li>
+                    <li><span class="font-semibold text-indigo-700">ロールプレイで<ruby>学習<rt>がくしゅう</rt></ruby>を<ruby>深<rt>ふか</rt></ruby>める:</span> <ruby>英語<rt>えいご</rt></ruby>の<ruby>入国<rt>にゅうこく</rt></ruby><ruby>審査<rt>しんさ</rt></ruby>など、ロールプレイの<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>を<ruby>依頼<rt>いらい</rt></ruby>し、<ruby>実践<rt>じっせん</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>学習<rt>がくしゅう</rt></ruby>を<ruby>繰<rt>く</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>すことができます。</li>
+                    <li><span class="font-semibold text-indigo-700"><ruby>授業<rt>じゅぎょう</rt></ruby><ruby>後<rt>ご</rt></ruby>の<ruby>理解<rt>りかい</rt></ruby><ruby>度<rt>ど</rt></ruby>テスト:</span> <ruby>苦<rt>にが</rt></ruby><ruby>手<rt>て</rt></ruby>な<ruby>単元<rt>たんげん</rt></ruby>について、<ruby>理解<rt>りかい</rt></ruby><ruby>度<rt>ど</rt></ruby>テストの<ruby>出題<rt>しゅつだい</rt></ruby>や、わかるまでのサポートを<ruby>依頼<rt>いらい</rt></ruby>できます。</li>
+                    <li><span class="font-semibold text-indigo-700"><ruby>文章<rt>ぶんしょう</rt></ruby><ruby>分析<rt>ぶんせき</rt></ruby>とアドバイス:</span> <ruby>作文<rt>さくぶん</rt></ruby>など、<ruby>文章<rt>ぶんしょう</rt></ruby>を<ruby>分析<rt>ぶんせき</rt></ruby>して<ruby>個別<rt>こべつ</rt></ruby>の<ruby>強<rt>つよ</rt></ruby>みや<ruby>課題<rt>かだい</rt></ruby>を<ruby>踏<rt>ふ</rt></ruby>まえたアドバイスをもらい、ライティングスキル<ruby>向上<rt>こうじょう</rt></ruby>に<ruby>役立<rt>やくだ</rt></ruby>てられます。</li>
+                    <li><span class="font-semibold text-indigo-700"><ruby>議論<rt>ぎろん</rt></ruby>の<ruby>深化<rt>しんか</rt></ruby>:</span> <ruby>古<rt>ふる</rt></ruby>くなった<ruby>校則<rt>こうそく</rt></ruby>の<ruby>見直<rt>みなお</rt></ruby>しなど、ディスカッション<ruby>相<rt>あい</rt></ruby><ruby>手<rt>て</rt></ruby>を<ruby>依頼<rt>いらい</rt></ruby>し、<ruby>課外<rt>かがい</rt></ruby><ruby>活動<rt>かつどう</rt></ruby>の<ruby>議論<rt>ぎろん</rt></ruby>を<ruby>深<rt>ふか</rt></ruby>めることができます。</li>
+                    <li><span class="font-semibold text-indigo-700"><ruby>学習<rt>がくしゅう</rt></ruby><ruby>計画<rt>けいかく</rt></ruby>の<ruby>相談<rt>そうだん</rt></ruby>:</span> <ruby>英検<rt>えいけん</rt></ruby><ruby>合格<rt>ごうかく</rt></ruby>など、<ruby>学習<rt>がくしゅう</rt></ruby><ruby>目標<rt>もくひょう</rt></ruby>に<ruby>向<rt>む</rt></ruby>けた<ruby>学習<rt>がくしゅう</rt></ruby><ruby>材料<rt>ざいりょう</rt></ruby>を<ruby>作成<rt>さくせい</rt></ruby>したり、<ruby>目標<rt>もくひょう</rt></ruby><ruby>達成<rt>たっせい</rt></ruby>の<ruby>学習<rt>がくしゅう</rt></ruby><ruby>計画<rt>けいかく</rt></ruby>を<ruby>相談<rt>そうだん</rt></ruby>したりできます。</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 6. 先生方‧保護者の方へ AI時代の学びを支えるために -->
+    <div class="page-break"></div>
+    <section id="section6" class="p-6 bg-white rounded-xl shadow-lg border-t-8 border-gray-500">
+        <h3 class="text-3xl font-extrabold mb-4 text-gray-700">6. <ruby>先⽣<rt>せんせい</rt></ruby>⽅‧<ruby>保護者<rt>ほごしゃ</rt></ruby>の<ruby>⽅<rt>かた</rt></ruby>へ AI <ruby>時代<rt>じだい</rt></ruby>の<ruby>⼦<rt>こ</rt></ruby>どもの<ruby>学<rt>まな</rt></ruby>びを<ruby>⽀<rt>ささ</rt></ruby>えるために</h3>
+        <p class="text-lg leading-relaxed mb-4">
+            AI <ruby>技術<rt>ぎじゅつ</rt></ruby>の<ruby>発展<rt>はってん</rt></ruby>は、<ruby>社会<rt>しゃかい</rt></ruby>にも<ruby>教育<rt>きょういく</rt></ruby><ruby>現場<rt>げんば</rt></ruby>にも<ruby>大<rt>おお</rt></ruby>きな<ruby>変化<rt>へんか</rt></ruby>をもたらしています。<ruby>生成<rt>せいせい</rt></ruby>AIは、<ruby>使<rt>つか</rt></ruby>い<ruby>方<rt>かた</rt></ruby><ruby>次第<rt>しだい</rt></ruby>で<ruby>子<rt>こ</rt></ruby>どもたちの<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>大<rt>おお</rt></ruby>きく<ruby>広<rt>ひろ</rt></ruby>げる<ruby>有用<rt>ゆうよう</rt></ruby>な<ruby>道具<rt>どうぐ</rt></ruby>となり<ruby>得<rt>え</rt></ruby>ますが、「<ruby>思考<rt>しこう</rt></ruby><ruby>力<rt>りょく</rt></ruby>の<ruby>低下<rt>ていか</rt></ruby>」「<ruby>個人<rt>こじん</rt></ruby><ruby>情報<rt>じょうほう</rt></ruby><ruby>漏<rt>ろう</rt></ruby><ruby>洩<rt>えい</rt></ruby>」「<ruby>著作<rt>ちょさく</rt></ruby><ruby>権<rt>けん</rt></ruby><ruby>侵害<rt>しんがい</rt></ruby>」「<ruby>不<rt>ふ</rt></ruby><ruby>適切<rt>てきせつ</rt></ruby>な<ruby>利用<rt>りよう</rt></ruby>」「<ruby>対人<rt>たいじん</rt></ruby>コミュニケーションの<ruby>希<rt>き</rt></ruby><ruby>薄<rt>はく</rt></ruby><ruby>化<rt>か</rt></ruby>」といった<ruby>懸念<rt>けねん</rt></ruby>も<ruby>抱<rt>いだ</rt></ruby>かれがちです。
+        </p>
+        <p class="text-lg leading-relaxed mb-6 font-semibold">
+            <ruby>本<rt>ほん</rt></ruby><ruby>誌<rt>し</rt></ruby>「<ruby>生成<rt>せいせい</rt></ruby>AIパスポート」では、これらの<ruby>懸念<rt>けねん</rt></ruby>を<ruby>解消<rt>かいしょう</rt></ruby>するため、<ruby>子<rt>こ</rt></ruby>どもたちが<ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>安全<rt>あんぜん</rt></ruby>に、<ruby>賢<rt>かしこ</rt></ruby>く<ruby>活用<rt>かつよう</rt></ruby>するための<ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>な 5 つのルールを<ruby>冒頭<rt>ぼうとう</rt></ruby>で<ruby>提示<rt>ていじ</rt></ruby>し、<ruby>随所<rt>ずいしょ</rt></ruby>で<ruby>伝<rt>つた</rt></ruby>えています。
+        </p>
+        
+        <div class="space-y-4 p-4 bg-gray-100 rounded-lg shadow-inner">
+            <h4 class="text-xl font-bold text-gray-800 border-b pb-1">🧰 <ruby>大人<rt>おとな</rt></ruby>が<ruby>子<rt>こ</rt></ruby>どもを<ruby>支<rt>ささ</rt></ruby>えるための<ruby>要点<rt>ようてん</rt></ruby></h4>
+            <ul class="list-disc list-inside space-y-2 text-base ml-4 text-gray-700">
+                <li><span class="font-semibold text-gray-800">ファクトチェックの<ruby>徹底<rt>てってい</rt></ruby>:</span> <ruby>生成<rt>せいせい</rt></ruby>AIの<ruby>出力<rt>しゅつりょく</rt></ruby>の<ruby>不<rt>ふ</rt></ruby><ruby>確実<rt>かくじつ</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>理解<rt>りかい</rt></ruby>させ、<ruby>批判<rt>ひはん</rt></ruby><ruby>的<rt>てき</rt></ruby><ruby>思考<rt>しこう</rt></ruby><ruby>⼒<rt>りょく</rt></ruby>と<ruby>情報<rt>じょうほう</rt></ruby>を<ruby>⾒<rt>み</rt></ruby><ruby>極<rt>きわ</rt></ruby>める<ruby>⼒<rt>ちから</rt></ruby>を<ruby>養<rt>やしな</rt></ruby>います。</li>
+                <li><span class="font-semibold text-gray-800"><ruby>個<rt>こ</rt></ruby><ruby>⼈<rt>じん</rt></ruby><ruby>情報<rt>じょうほう</rt></ruby><ruby>保護<rt>ほご</rt></ruby>の<ruby>意識<rt>いしき</rt></ruby><ruby>付<rt>づ</rt></ruby>け:</span> デジタル<ruby>社会<rt>しゃかい</rt></ruby>におけるプライバシー<ruby>保護<rt>ほご</rt></ruby>の<ruby>重要<rt>じゅうよう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>具体<rt>ぐたい</rt></ruby><ruby>的<rt>てき</rt></ruby>に<ruby>伝<rt>つた</rt></ruby>え、<ruby>安全<rt>あんぜん</rt></ruby>な<ruby>利用<rt>りよう</rt></ruby><ruby>習慣<rt>しゅうかん</rt></ruby>を<ruby>確立<rt>かくりつ</rt></ruby>します。</li>
+                <li><span class="font-semibold text-gray-800"><ruby>著作<rt>ちょさく</rt></ruby><ruby>権<rt>けん</rt></ruby>‧<ruby>知的<rt>ちてき</rt></ruby><ruby>財産<rt>ざいさん</rt></ruby><ruby>権<rt>けん</rt></ruby>の<ruby>尊重<rt>そんちょう</rt></ruby>:</span> <ruby>他者<rt>たしゃ</rt></ruby>の<ruby>作品<rt>さくひん</rt></ruby>や<ruby>権利<rt>けんり</rt></ruby>を<ruby>尊重<rt>そんちょう</rt></ruby>するデジタル‧シティズンシップを<ruby>育<rt>はぐく</rt></ruby>みます。</li>
+                <li><span class="font-semibold text-gray-800"><ruby>主体<rt>しゅたい</rt></ruby><ruby>的<rt>てき</rt></ruby>な<ruby>思考<rt>しこう</rt></ruby>と<ruby>創造<rt>そうぞう</rt></ruby><ruby>性<rt>せい</rt></ruby>の<ruby>促進<rt>そくしん</rt></ruby>:</span> <ruby>生成<rt>せいせい</rt></ruby>AIを <span class="font-extrabold text-purple-700">「<ruby>道具<rt>どうぐ</rt></ruby>」として<ruby>活用<rt>かつよう</rt></ruby></span>し、<ruby>安易<rt>あんい</rt></ruby>な<ruby>依存<rt>いぞん</rt></ruby>を<ruby>防<rt>ふせ</rt></ruby>ぎます。</li>
+                <li><span class="font-semibold text-gray-800"><ruby>⼤<rt>おとな</rt></ruby>への<ruby>相談<rt>そうだん</rt></ruby><ruby>習慣<rt>しゅうかん</rt></ruby>の<ruby>確<rt>かく</rt></ruby><ruby>⽴<rt>りつ</rt></ruby>:</span> <ruby>子<rt>こ</rt></ruby>どもが<ruby>安心<rt>あんしん</rt></ruby>して<ruby>相談<rt>そうだん</rt></ruby>できる<ruby>関係<rt>かんけい</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>築<rt>きず</rt></ruby>くことで、<ruby>潜在<rt>せんざい</rt></ruby><ruby>的<rt>てき</rt></ruby>なリスクを<ruby>早期<rt>そうき</rt></ruby>に<ruby>発見<rt>はっけん</rt></ruby>し、<ruby>適切<rt>てきせつ</rt></ruby>なサポートを<ruby>提供<rt>ていきょう</rt></ruby>します。</li>
+            </ul>
+        </div>
+        
+        <p class="text-lg leading-relaxed mt-6">
+            <ruby>文部<rt>もんぶ</rt></ruby><ruby>科学<rt>かがく</rt></ruby><ruby>省<rt>しょう</rt></ruby>のガイドラインが<ruby>示<rt>しめ</rt></ruby>すように、<ruby>生成<rt>せいせい</rt></ruby>AIは「<ruby>人間<rt>にんげん</rt></ruby>の<ruby>能力<rt>のうりょく</rt></ruby>を<ruby>補助<rt>ほじょ</rt></ruby>‧<ruby>拡張<rt>かくちょう</rt></ruby>し、<ruby>可能<rt>かのう</rt></ruby><ruby>性<rt>せい</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げる<ruby>有用<rt>ゆうよう</rt></ruby>な<ruby>道具<rt>どうぐ</rt></ruby>」です。私たち<ruby>大人<rt>おとな</rt></ruby>は、<ruby>単<rt>たん</rt></ruby>に<ruby>利用<rt>りよう</rt></ruby>を<ruby>制限<rt>せいげん</rt></ruby>するだけでなく、メリットとデメリットを<ruby>共<rt>とも</rt></ruby>に<ruby>理解<rt>りかい</rt></ruby>し、<ruby>子<rt>こ</rt></ruby>どもたちが<ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>使<rt>つか</rt></ruby>いこなすための<ruby>支援<rt>しえん</rt></ruby>をしていく<ruby>必要<rt>ひつよう</rt></ruby>があります。
+        </p>
+    </section>
+
+    <!-- フッター -->
+    <footer class="text-center mt-16 pt-8 border-t-2 border-gray-300">
+        <p class="text-xl font-extrabold text-indigo-700">さあ、<ruby>生成<rt>せいせい</rt></ruby>AIを<ruby>安全<rt>あんぜん</rt></ruby>に、そして<ruby>上手<rt>じょうず</rt></ruby>に<ruby>使<rt>つか</rt></ruby>って、<ruby>未来<rt>みらい</rt></ruby>の<ruby>学<rt>まな</rt></ruby>びを<ruby>楽<rt>たの</rt></ruby>しもう！</p>
+    </footer>
+
+</body>
+</html>
